@@ -39,10 +39,22 @@ await checkStatus();
 // non-constant conditional polling
 checkStatus = schedule(getStatus, {
     timeout: (value, iteration) => {
-        return iteration < 10 ? 1000 : 5000;
+        return iteration < 5 ? 1000 : 5000;
     },
     repeat: (value, iteration) => {
         return value !== 'completed' && iteration < 10;
+    }
+});
+
+// interruption with an exception
+checkStatus = schedule(getStatus, {
+    timeout: (value, iteration) => {
+        return iteration < 5 ? 1000 : 5000;
+    },
+    repeat: (value, iteration) => {
+        if (iteration > 10)
+            throw new Error('timed out');
+        return value !== 'completed';
     }
 });
 await checkStatus();
