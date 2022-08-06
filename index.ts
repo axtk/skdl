@@ -15,7 +15,7 @@ export function schedule<P extends any[] = any[], T = any>(
     callback: (...args: P) => Promise<T> | T,
     {repeat, timeout}: ScheduleOptions<T | undefined> = {},
 ): (...args: P) => Promise<T | undefined> {
-    return (...args: P) => {
+    return (...args) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
                 let iteration = 0;
