@@ -14,7 +14,7 @@ export type ScheduleOptions<T = any> = {
 export function schedule<P extends any[] = any[], T = any>(
     callback: (...args: P) => Promise<T> | T,
     {repeat, timeout}: ScheduleOptions<T | undefined> = {},
-): (...args: P) => Promise<T | undefined> | T | undefined {
+): (...args: P) => Promise<T | undefined> {
     return (...args: P) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
@@ -64,6 +64,6 @@ export function schedule<P extends any[] = any[], T = any>(
             });
         }
 
-        return callback(...args);
+        return Promise.resolve(callback(...args));
     };
 }
