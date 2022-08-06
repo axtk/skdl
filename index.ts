@@ -12,7 +12,7 @@ export type ScheduleOptions<T = any> = {
 };
 
 export function schedule<P extends any[] = any[], T = any>(
-    action: (...args: P) => Promise<T> | T,
+    callback: (...args: P) => Promise<T> | T,
     {repeat, timeout}: ScheduleOptions<T | undefined> = {},
 ): (...args: P) => Promise<T | undefined> | T | undefined {
     return (...args: P) => {
@@ -32,7 +32,7 @@ export function schedule<P extends any[] = any[], T = any>(
                         timeout;
 
                     setTimeout(() => {
-                        Promise.resolve(action(...args)).then(resolvedValue => {
+                        Promise.resolve(callback(...args)).then(resolvedValue => {
                             latestValue = resolvedValue;
                             iteration++;
                             run();
@@ -50,11 +50,11 @@ export function schedule<P extends any[] = any[], T = any>(
                     timeout;
 
                 setTimeout(() => {
-                    resolve(action(...args));
+                    resolve(callback(...args));
                 }, delay);
             });
         }
 
-        return action(...args);
+        return callback(...args);
     };
 }
