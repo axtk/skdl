@@ -1,4 +1,4 @@
-export type ScheduleOptions<T = any> = {
+export type ScheduleOptions<T> = {
     /**
      * A number of repetitions or a condition to repeat the iterations.
      */
@@ -11,7 +11,7 @@ export type ScheduleOptions<T = any> = {
     timeout?: number | ((value: T, iteration: number) => number);
 };
 
-export function schedule<P extends any[] = any[], T = any>(
+export function schedule<P extends any[], T>(
     callback: (...args: P) => Promise<T> | T,
     {repeat, timeout}: ScheduleOptions<T | undefined> = {},
 ): (...args: P) => Promise<T | undefined> {
