@@ -30,6 +30,8 @@ await checkStatus();
 // constant conditional polling
 checkStatus = schedule(getStatus, {
     delay: 3000,
+    // at each iteration, the `value` parameter refers to the
+    // returned value of the scheduled callback
     repeat: (value, iteration) => {
         return value !== 'completed' && iteration < 10;
     }
