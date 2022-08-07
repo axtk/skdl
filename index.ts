@@ -1,4 +1,4 @@
-export type ScheduleParams<T> = {
+export type ScheduleOptions<T> = {
     /**
      * A delay between iterations in milliseconds.
      * An exponential polling or any other variety of a non-constant polling
@@ -11,23 +11,10 @@ export type ScheduleParams<T> = {
     repeat?: boolean | number | ((value: T, iteration: number) => boolean);
 };
 
-export type ScheduleOptions<T> = ScheduleParams<T> | number | undefined;
-
 export function schedule<P extends any[], T>(
     callback: (...args: P) => Promise<T> | T,
-    options?: ScheduleOptions<T | undefined>,
+    {delay, repeat}: ScheduleOptions<T | undefined> = {},
 ): (...args: P) => Promise<T | undefined> {
-    let params: ScheduleParams<T | undefined>;
-
-    if (options === undefined)
-        params = {};
-    else if (typeof options === 'number')
-        params = {delay: options};
-    else
-        params = options;
-
-    let {delay, repeat} = params;
-
     return (...args) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
