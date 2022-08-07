@@ -55,7 +55,7 @@ checkStatus = schedule(getStatus, {
     },
     repeat: (value, iteration) => {
         if (iteration > 10)
-            throw new Error('timed out');
+            throw new Error('too many iterations');
         return value !== 'completed';
     }
 });
