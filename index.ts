@@ -1,20 +1,33 @@
-export type ScheduleOptions<T> = {
-    /**
-     * A number of repetitions or a condition to repeat the iterations.
-     */
-    repeat?: boolean | number | ((value: T, iteration: number) => boolean);
+export type ScheduleParams<T> = {
     /**
      * A delay between iterations in milliseconds.
      * An exponential polling or any other variety of a non-constant polling
      * can be set up by passing a function to this option.
      */
-    timeout?: number | ((value: T, iteration: number) => number);
+    delay?: number | ((value: T, iteration: number) => number);
+    /**
+     * A number of repetitions or a condition to repeat the iterations.
+     */
+    repeat?: boolean | number | ((value: T, iteration: number) => boolean);
 };
+
+export type ScheduleOptions<T> = ScheduleParams<T> | number | undefined;
 
 export function schedule<P extends any[], T>(
     callback: (...args: P) => Promise<T> | T,
-    {repeat, timeout}: ScheduleOptions<T | undefined> = {},
+    options?: ScheduleOptions<T | undefined>,
 ): (...args: P) => Promise<T | undefined> {
+    let params: ScheduleParams<T | undefined>;
+
+    if (options === undefined)
+        params = {};
+    else if (typeof options === 'number')
+        params = {delay: options};
+    else
+        params = options;
+
+    let {delay, repeat} = params;
+
     return (...args) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
@@ -28,9 +41,9 @@ export function schedule<P extends any[], T>(
                         if (typeof repeat === 'function' && !repeat(latestValue, iteration))
                             return resolve(latestValue);
 
-                        let delay = typeof timeout === 'function' ?
-                            timeout(latestValue, iteration) :
-                            timeout;
+                        let resolvedDelay = typeof delay === 'function' ?
+                            delay(latestValue, iteration) :
+                            delay;
 
                         setTimeout(() => {
                             Promise.resolve(callback(...args))
@@ -40,7 +53,7 @@ export function schedule<P extends any[], T>(
                                     run();
                                 })
                                 .catch(reject);
-                        }, delay);
+                        }, resolvedDelay);
                     }
                     catch (error) {
                         reject(error);
@@ -50,17 +63,17 @@ export function schedule<P extends any[], T>(
             });
         }
 
-        if (timeout !== undefined) {
+        if (delay !== undefined) {
             return new Promise((resolve, reject) => {
-                let delay = typeof timeout === 'function' ?
-                    timeout(undefined, 0) :
-                    timeout;
+                let resolvedDelay = typeof delay === 'function' ?
+                    delay(undefined, 0) :
+                    delay;
 
                 setTimeout(() => {
                     Promise.resolve(callback(...args))
                         .then(resolve)
                         .catch(reject);
-                }, delay);
+                }, resolvedDelay);
             });
         }
 

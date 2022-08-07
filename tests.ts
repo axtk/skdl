@@ -29,36 +29,36 @@ await test('-; -', schedule(f), 0);
 
 await test('false; .5"', schedule(f, {
     repeat: false,
-    timeout: .5*SEC,
+    delay: .5*SEC,
 }), .5);
 
 await test('undefined; .5"', schedule(f, {
-    timeout: .5*SEC,
+    delay: .5*SEC,
 }), .5);
 
 await test('0; .5"', schedule(f, {
     repeat: 0,
-    timeout: .5*SEC,
+    delay: .5*SEC,
 }), .5);
 
 await test('3; .5"', schedule(f, {
     repeat: 3,
-    timeout: .5*SEC,
+    delay: .5*SEC,
 }), 1.5);
 
 await test('3; .5*(1+k)"', schedule(f, {
     repeat: 3,
-    timeout: (_, k) => .5*(1 + k)*SEC,
+    delay: (_, k) => .5*(1 + k)*SEC,
 }), 3);
 
 await test('PI; .25*(1+k)"', schedule(f, {
     repeat: (_, k) => k < Math.PI,
-    timeout: (_, k) => .25*(1 + k)*SEC,
+    delay: (_, k) => .25*(1 + k)*SEC,
 }), 2.5);
 
 await test('!completed; 1"', schedule(r, {
     repeat: v => v?.x !== 'completed',
-    timeout: .25*SEC,
+    delay: .25*SEC,
 }), 1);
 
 })();

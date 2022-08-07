@@ -16,20 +16,20 @@ let checkStatus;
 
 // single delayed call
 checkStatus = schedule(getStatus, {
-    timeout: 1000
+    delay: 1000
 });
 await checkStatus();
 
 // constant finite polling
 checkStatus = schedule(getStatus, {
-    timeout: 3000,
+    delay: 3000,
     repeat: 10
 });
 await checkStatus();
 
 // constant conditional polling
 checkStatus = schedule(getStatus, {
-    timeout: 3000,
+    delay: 3000,
     repeat: (value, iteration) => {
         return value !== 'completed' && iteration < 10;
     }
@@ -38,7 +38,7 @@ await checkStatus();
 
 // non-constant conditional polling
 checkStatus = schedule(getStatus, {
-    timeout: (value, iteration) => {
+    delay: (value, iteration) => {
         return iteration < 5 ? 1000 : 5000;
     },
     repeat: (value, iteration) => {
@@ -48,7 +48,7 @@ checkStatus = schedule(getStatus, {
 
 // interruption with an exception
 checkStatus = schedule(getStatus, {
-    timeout: (value, iteration) => {
+    delay: (value, iteration) => {
         return iteration < 5 ? 1000 : 5000;
     },
     repeat: (value, iteration) => {
