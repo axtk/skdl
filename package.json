@@ -8,6 +8,7 @@
     "build": "cross-env npm run cleanup && npm run compile",
     "cleanup": "node -e \"require('fs').rmSync('dist', {force: true, recursive: true});\"",
     "compile": "tsc",
+    "prepublishOnly": "npm run build",
     "preversion": "cross-env npm run build && npm run test",
     "test": "node --experimental-specifier-resolution=node dist/tests.js",
     "typecheck": "tsc --noEmit"
