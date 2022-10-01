@@ -4,22 +4,22 @@ export type ScheduleOptions<T> = {
      * An exponential polling or any other variety of a non-constant polling
      * can be set up by passing a function to this option.
      */
-    delay?: number | ((value: T, iteration: number) => number);
+    delay?: number | ((value: T | undefined, iteration: number) => number);
     /**
      * A number of repetitions or a condition to repeat the iterations.
      */
-    repeat?: boolean | number | ((value: T, iteration: number) => boolean);
+    repeat?: boolean | number | ((value: T | undefined, iteration: number) => boolean);
 };
 
-export function schedule<P extends any[], T>(
-    callback: (...args: P) => Promise<T> | T,
-    {delay, repeat}: ScheduleOptions<T | undefined> = {},
-): (...args: P) => Promise<T | undefined> {
+export function schedule<Params extends any[], Result>(
+    callback: (...args: Params) => Promise<Result> | Result,
+    {delay, repeat}: ScheduleOptions<Result> = {},
+): (...args: Params) => Promise<Result | undefined> {
     return (...args) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
                 let iteration = 0;
-                let latestValue: T | undefined = undefined;
+                let latestValue: Result | undefined = undefined;
                 let run = () => {
                     try {
                         if (typeof repeat === 'number' && iteration >= repeat)
