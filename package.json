@@ -1,6 +1,6 @@
 {
   "name": "skdl",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Scheduled actions and pollings",
   "main": "dist/index.js",
   "type": "module",
