@@ -47,6 +47,7 @@ checkStatus = schedule(getStatus, {
         return value !== 'completed' && iteration < 10;
     }
 });
+await checkStatus();
 
 // interruption with an exception
 checkStatus = schedule(getStatus, {
