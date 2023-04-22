@@ -1,7 +1,7 @@
 {
   "name": "skdl",
   "version": "0.2.5",
-  "description": "Scheduled actions and pollings",
+  "description": "Scheduled actions and pollings as Promises",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -18,14 +18,13 @@
     "url": "git+https://github.com/axtk/skdl.git"
   },
   "keywords": [
-    "repeat",
     "polling",
-    "poll"
+    "promise"
   ],
   "author": "axtk",
   "license": "ISC",
   "devDependencies": {
-    "cross-env": "7.0.3",
-    "typescript": "4.7.4"
+    "cross-env": "^7.0.3",
+    "typescript": "^5.0.4"
   }
 }
