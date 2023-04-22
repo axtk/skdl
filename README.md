@@ -41,6 +41,7 @@ checkStatus = schedule(getStatus, {
 await checkStatus();
 
 // non-constant conditional polling
+// (exponential polling also falls under this category)
 checkStatus = schedule(getStatus, {
     delay: (value, iteration) => {
         return iteration < 5 ? 1000 : 5000;
