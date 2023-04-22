@@ -1,6 +1,8 @@
 # skdl
 
-*Scheduled actions and pollings*
+*Scheduled actions and pollings as Promises*
+
+Interaction with a scheduled repeated action or a polling looks similar to interaction with a `Promise`: launching and waiting for its resolution to proceed to other tasks. This package helps create a `Promise` for a repeated action that resolves when a defined condition is met.
 
 ## Examples
 
