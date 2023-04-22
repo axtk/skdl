@@ -11,7 +11,7 @@ import {schedule} from 'skdl';
 
 async function getStatus() {
     let response = await fetch('/status');
-    return await response.json();
+    return await response.text();
 }
 
 let checkStatus;
