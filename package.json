@@ -1,6 +1,6 @@
 {
   "name": "skdl",
-  "version": "0.2.6",
+  "version": "1.0.0",
   "description": "Scheduled actions and pollings as Promises",
   "main": "dist/index.js",
   "type": "module",
