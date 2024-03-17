@@ -1,4 +1,4 @@
-import {schedule} from './index';
+import {schedule} from './src/schedule';
 
 const SEC = 1e3;
 
