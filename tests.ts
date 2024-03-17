@@ -19,8 +19,8 @@ async function test(title: string, fn: () => unknown | Promise<unknown>, time?: 
     let dt = Date.now() - t0;
     if (showElapsedTimes)
         console.log(`Elapsed: ${(dt/SEC).toFixed(3)}"`);
-    if (time !== undefined)
-        console.assert(Math.abs(time*SEC - dt) < 150, `Out of time bounds: '${title}'; expected: ${time}"`);
+    if (time !== undefined && Math.abs(time*SEC - dt) > 150)
+        throw new Error(`Out of time bounds: '${title}'; expected: ${time}"`);
 }
 
 (async () => {
