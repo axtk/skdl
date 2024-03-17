@@ -4,6 +4,12 @@
 
 Interaction with a scheduled repeated action or a polling looks similar to interaction with a `Promise`: launching and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating a `Promise` for a repeated action that resolves when a defined condition is met.
 
+## Installation
+
+```
+npm i skdl
+```
+
 ## Examples
 
 Let's take the following polling function as an example to illustrate the common types of pollings:
