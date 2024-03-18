@@ -36,7 +36,7 @@ let getTaskData = schedule(getPollableTaskData, {
 let taskData = await getTaskData(taskId);
 ```
 
-Here, `getTaskData(taskId)` is resolved after 10 iterations, 3 seconds apart from each other, have passed.
+Here, `getTaskData(taskId)` is resolved after 10 iterations have passed, with each iteration 3 seconds apart from another.
 
 ### Constant infinite polling
 
