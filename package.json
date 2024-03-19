@@ -1,7 +1,7 @@
 {
   "name": "skdl",
   "version": "1.0.4",
-  "description": "Scheduled actions and pollings as Promises",
+  "description": "Polling as an async function",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -20,7 +20,8 @@
   },
   "keywords": [
     "polling",
-    "promise"
+    "promise",
+    "async"
   ],
   "author": "axtk",
   "license": "ISC",

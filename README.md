@@ -1,8 +1,8 @@
 # skdl
 
-*Scheduled actions and pollings as Promises*
+*Polling as an async function*
 
-Interaction with a scheduled repeated action or a polling looks similar to interaction with a `Promise`: launching and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating a `Promise` for a repeated action that resolves when a defined condition is met.
+Interaction with a polling (i.e. a scheduled repeated action) looks similar to interaction with an asynchronous function: calling and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating an async function for a repeated action that is resolved when a defined condition is met.
 
 ## Installation
 
@@ -21,7 +21,7 @@ async function poll(params) {
 }
 ```
 
-In the examples below, this function is passed to the `schedule` utility as a parameter. The output of `schedule` is a new function with the same parameters and return value as the original `poll()` function, except it is resolved only when the polling completes. The resolved value of the new function is what the polling function `poll()` returns in the last polling iteration.
+In the examples below, this function is passed to the `schedule` utility as a parameter. The output of `schedule` is a new async function with the same parameters and return value as the original `poll()` function, except it is resolved only when the polling completes. The resolved value of the new function is what the polling function `poll()` returns in the last polling iteration.
 
 ### Constant finite polling
 
