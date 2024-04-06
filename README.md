@@ -4,6 +4,16 @@
 
 Interaction with a polling (i.e. a scheduled repeated action) looks similar to interaction with an asynchronous function: calling and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating an async function for a repeated action that is resolved when a defined condition is met.
 
+- [Installation](#installation)
+- [Examples](#examples)
+  - [Constant finite polling](#constant-finite-polling)
+  - [Constant infinite polling](#constant-infinite-polling)
+  - [Constant conditional polling](#constant-conditional-polling)
+  - [Non-constant conditional polling (including exponential backoff)](#non-constant-conditional-polling-including-exponential-backoff)
+  - [Interruption with an exception](#interruption-with-an-exception)
+  - [Single delayed call](#single-delayed-call)
+  - [With React](#with-react)
+
 ## Installation
 
 ```
