@@ -125,3 +125,60 @@ let data = await getData(params);
 ```
 
 As an edge case, a polling can be reduced to a single delayed call. Here, `getData(params)` is resolved to `data` after 1 iteration delayed by 1 second.
+
+### With React
+
+With React, it is generally necessary to clean up pollings started by a component when the component gets unmounted. It can be arranged with the `repeat` option, just as any other condition controlling whether a polling should proceed:
+
+```js
+import { useEffect, useRef, useState } from 'react';
+import { schedule } from 'skdl';
+
+const Task = ({ id }) => {
+    const isMounted = useRef(false);
+    const [status, setStatus] = useState();
+
+    useEffect(() => {
+        isMounted.current = true;
+
+        const pollStatus = () => {
+            return fetch(`/tasks/status?id=${id}`)
+                .then(response => response.json());
+        };
+
+        // the `schedule` utility creates a function returning a Promise
+        // that is resolved when the `repeat` option returns `false`
+        // effectively turning a polling into a Promise
+        const waitForCompletion = schedule(pollStatus, {
+            delay: 5000,
+            repeat: (data) => {
+                if (isMounted.current)
+                    setStatus(data.status);
+
+                // the scheduled polling will proceed as long as the
+                // component is mounted and the fetched status is
+                // other than 'complete'
+                return isMounted.current && data.status !== 'complete';
+            },
+        });
+
+        waitForCompletion().then(() => {
+            if (isMounted.current) {
+                // any actions required after the task is completed
+                // like fetching and rendering the full task data or
+                // redirecting the user to another location
+            }
+        });
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, [id]);
+
+    return (
+        <div className="task">
+            Task #{id}: {status}
+        </div>
+    );
+};
+```
