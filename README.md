@@ -322,4 +322,4 @@ const Task = ({ id }) => {
 
 ## `schedule()` vs `waitFor()`
 
-`waitFor()` only checks whether a certain condition is met without returning the latest result of the poll function, which is sometimes unnecessary. To make use of the latest data from the poll function `schedule()` should be used instead.
+A polling can be similarly configured with both `schedule()` and `waitFor()`. `waitFor()` only checks whether a certain condition is met without returning the latest result of the poll function, which is sometimes unnecessary, resulting in a concise syntax. To make use of the latest data from the poll function the more general-purpose `schedule()` should be used instead.
