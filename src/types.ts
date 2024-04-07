@@ -9,4 +9,10 @@ export type ScheduleOptions<T = unknown> = {
      * A number of repetitions or a condition to repeat the iterations.
      */
     repeat?: boolean | number | ((value: T | undefined, iteration: number) => boolean | Promise<boolean>);
+    /**
+     * Time limit in milliseconds.
+     */
+    timeout?: number;
 };
+
+export type Timeout = ReturnType<typeof setTimeout> | null;

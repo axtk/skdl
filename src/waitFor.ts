@@ -1,33 +1,17 @@
-export function waitFor(
+import { schedule } from './schedule';
+
+const noop = () => {};
+
+export async function waitFor(
     isComplete: (iteration: number) => boolean | Promise<boolean>,
     delay: number | ((iteration: number) => number),
+    timeout?: number,
 ) {
-    return new Promise<void>((resolve, reject) => {
-        let iteration = 0;
-
-        let run = () => {
-            try {
-                Promise.resolve(isComplete(iteration))
-                    .then(value => {
-                        if (value) resolve();
-                        else {
-                            let resolvedDelay = typeof delay === 'function' ?
-                                delay(iteration) :
-                                delay;
-
-                            setTimeout(() => {
-                                iteration++;
-                                run();
-                            }, resolvedDelay);
-                        }
-                    })
-                    .catch(reject);
-            }
-            catch (error) {
-                reject(error);
-            }
-        };
-
-        run();
+    let waitForCompletion = schedule(noop, {
+        repeat: (_data, iteration) => !isComplete(iteration),
+        delay: typeof delay === 'function' ? (_data, iteration) => delay(iteration) : delay,
+        timeout,
     });
+
+    await waitForCompletion();
 }

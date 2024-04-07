@@ -26,6 +26,7 @@
   "author": "axtk",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.12.5",
     "esbuild": "^0.20.2",
     "npm-run-all": "^4.1.5"
   }

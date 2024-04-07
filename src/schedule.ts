@@ -1,33 +1,56 @@
-import type { ScheduleOptions } from './types';
+import { SCHEDULE_TIMEOUT } from './const';
+import type { ScheduleOptions, Timeout } from './types';
 
 export function schedule<Result, Params extends unknown[]>(
     callback: (...args: Params) => Promise<Result> | Result,
-    { delay, repeat }: ScheduleOptions<Result> = {},
+    { delay, repeat, timeout }: ScheduleOptions<Result> = {},
 ): (...args: Params) => Promise<Result | undefined> {
     return (...args) => {
-        if (repeat) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            let callbackTimeout: Timeout = null;
+            let scheduleTimeout: Timeout = null;
+
+            let cleanup = () => {
+                if (callbackTimeout !== null)
+                    clearTimeout(callbackTimeout);
+
+                if (scheduleTimeout !== null)
+                    clearTimeout(scheduleTimeout);
+            };
+
+            if (timeout !== undefined)
+                scheduleTimeout = setTimeout(() => {
+                    cleanup();
+                    reject(new Error(SCHEDULE_TIMEOUT));
+                }, timeout);
+
+            if (repeat) {
                 let iteration = 0;
                 let latestValue: Result | undefined = undefined;
 
                 let run = () => {
                     try {
                         let next = (shouldRepeat: boolean) => {
-                            if (!shouldRepeat)
+                            if (!shouldRepeat) {
+                                cleanup();
                                 return resolve(latestValue);
+                            }
 
                             let resolvedDelay = typeof delay === 'function' ?
                                 delay(latestValue, iteration) :
                                 delay;
 
-                            setTimeout(() => {
+                            callbackTimeout = setTimeout(() => {
                                 Promise.resolve(callback(...args))
                                     .then(resolvedValue => {
                                         latestValue = resolvedValue;
                                         iteration++;
                                         run();
                                     })
-                                    .catch(reject);
+                                    .catch(error => {
+                                        cleanup();
+                                        reject(error);
+                                    });
                             }, resolvedDelay);
                         };
 
@@ -37,28 +60,41 @@ export function schedule<Result, Params extends unknown[]>(
                             Promise.resolve(repeat(latestValue, iteration)).then(next);
                     }
                     catch (error) {
+                        cleanup();
                         reject(error);
                     }
                 };
 
                 run();
-            });
-        }
-
-        if (delay !== undefined) {
-            return new Promise((resolve, reject) => {
+            }
+            else if (delay !== undefined) {
                 let resolvedDelay = typeof delay === 'function' ?
                     delay(undefined, 0) :
                     delay;
 
-                setTimeout(() => {
+                callbackTimeout = setTimeout(() => {
                     Promise.resolve(callback(...args))
-                        .then(resolve)
-                        .catch(reject);
+                        .then(value => {
+                            cleanup();
+                            resolve(value);
+                        })
+                        .catch(error => {
+                            cleanup();
+                            reject(error);
+                        });
                 }, resolvedDelay);
-            });
-        }
-
-        return Promise.resolve(callback(...args));
+            }
+            else {
+                Promise.resolve(callback(...args))
+                    .then(value => {
+                        cleanup();
+                        resolve(value);
+                    })
+                    .catch(error => {
+                        cleanup();
+                        reject(error);
+                    });
+            }
+        });
     };
 }
