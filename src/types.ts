@@ -8,5 +8,5 @@ export type ScheduleOptions<T = unknown> = {
     /**
      * A number of repetitions or a condition to repeat the iterations.
      */
-    repeat?: boolean | number | ((value: T | undefined, iteration: number) => boolean);
+    repeat?: boolean | number | ((value: T | undefined, iteration: number) => boolean | Promise<boolean>);
 };

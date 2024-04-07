@@ -1,40 +1,46 @@
-import type {ScheduleOptions} from './types';
+import type { ScheduleOptions } from './types';
 
-export function schedule<Params extends unknown[], Result>(
+export function schedule<Result, Params extends unknown[]>(
     callback: (...args: Params) => Promise<Result> | Result,
-    {delay, repeat}: ScheduleOptions<Result> = {},
+    { delay, repeat }: ScheduleOptions<Result> = {},
 ): (...args: Params) => Promise<Result | undefined> {
     return (...args) => {
         if (repeat) {
             return new Promise((resolve, reject) => {
                 let iteration = 0;
                 let latestValue: Result | undefined = undefined;
+
                 let run = () => {
                     try {
-                        if (typeof repeat === 'number' && iteration >= repeat)
-                            return resolve(latestValue);
+                        let next = (shouldRepeat: boolean) => {
+                            if (!shouldRepeat)
+                                return resolve(latestValue);
 
-                        if (typeof repeat === 'function' && !repeat(latestValue, iteration))
-                            return resolve(latestValue);
+                            let resolvedDelay = typeof delay === 'function' ?
+                                delay(latestValue, iteration) :
+                                delay;
 
-                        let resolvedDelay = typeof delay === 'function' ?
-                            delay(latestValue, iteration) :
-                            delay;
+                            setTimeout(() => {
+                                Promise.resolve(callback(...args))
+                                    .then(resolvedValue => {
+                                        latestValue = resolvedValue;
+                                        iteration++;
+                                        run();
+                                    })
+                                    .catch(reject);
+                            }, resolvedDelay);
+                        };
 
-                        setTimeout(() => {
-                            Promise.resolve(callback(...args))
-                                .then(resolvedValue => {
-                                    latestValue = resolvedValue;
-                                    iteration++;
-                                    run();
-                                })
-                                .catch(reject);
-                        }, resolvedDelay);
+                        if (typeof repeat === 'number')
+                            next(iteration < repeat);
+                        else if (typeof repeat === 'function')
+                            Promise.resolve(repeat(latestValue, iteration)).then(next);
                     }
                     catch (error) {
                         reject(error);
                     }
                 };
+
                 run();
             });
         }
