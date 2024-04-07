@@ -1,7 +1,7 @@
 {
   "name": "skdl",
   "version": "1.1.0",
-  "description": "Polling as an async function",
+  "description": "Promisifying pollings",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
