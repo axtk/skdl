@@ -5,7 +5,7 @@
 Interaction with a polling (i.e. a scheduled repeated action) looks similar to interaction with an asynchronous function: calling and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating an async function for a repeated action that is resolved when a defined condition is met.
 
 - [Installation](#installation)
-- [Examples](#examples)
+- [`schedule()`](#schedule)
   - [Constant finite polling](#constant-finite-polling)
   - [Constant infinite polling](#constant-infinite-polling)
   - [Constant conditional polling](#constant-conditional-polling)
@@ -13,8 +13,10 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
   - [Interruption with an exception](#interruption-with-an-exception)
   - [Single delayed call](#single-delayed-call)
   - [With React](#with-react)
-  - [`waitFor`](#waitfor)
-    - [Waiting for a DOM element](#waiting-for-a-dom-element)
+- [`waitFor()`](#waitfor)
+  - [Waiting for a DOM element](#waiting-for-a-dom-element)
+  - [With React](#with-react-1)
+- [`schedule()` vs `waitFor()`](#schedule-vs-waitfor)
 
 ## Installation
 
@@ -22,7 +24,7 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
 npm i skdl
 ```
 
-## Examples
+## `schedule()`
 
 Let's take the following polling function as an example to illustrate the common types of pollings:
 
@@ -174,7 +176,7 @@ const Task = ({ id }) => {
             },
         });
 
-        waitForCompletion().then(() => {
+        waitForCompletion().then(data => {
             if (isMounted.current) {
                 // any actions required after the task is completed
                 // like fetching and rendering the full task data or
@@ -195,7 +197,7 @@ const Task = ({ id }) => {
 };
 ```
 
-### `waitFor`
+## `waitFor()`
 
 When the returned value of the polling function is a `boolean` value (or can be expressed as such), waiting for a condition to be met can be further simplified with the `waitFor()` utility function:
 
@@ -220,7 +222,7 @@ Like `schedule()`, `waitFor()` accepts either a constant or non-constant delay a
 await waitFor(isComplete, iteration => iteration < 5 ? 1000 : 5000);
 ```
 
-#### Waiting for a DOM element
+### Waiting for a DOM element
 
 `waitFor()` can also be used to wait for a DOM element to appear in the DOM tree:
 
@@ -229,3 +231,56 @@ import { waitFor } from 'skdl';
 
 await waitFor(() => document.querySelector('.target') !== null, 100);
 ```
+
+### With React
+
+Like with `schedule()`, `waitFor()` can be stopped when a React component hosting the `waitFor()` call gets unmounted:
+
+```js
+import { useEffect, useRef, useState } from 'react';
+import { waitFor } from 'skdl';
+
+const Task = ({ id }) => {
+    const isMounted = useRef(false);
+    const [status, setStatus] = useState();
+
+    useEffect(() => {
+        isMounted.current = true;
+
+        const isComplete = () => {
+            return fetch(`/tasks/status?id=${id}`)
+                .then(response => response.json())
+                .then(({ status }) => {
+                    if (isMounted.current)
+                        setStatus(status);
+
+                    // the polling will be completed when the component
+                    // is unmounted or the fetched status is 'complete'
+                    return !isMounted.current || status === 'complete';
+                });
+        };
+
+        waitFor(isComplete, 5000).then(() => {
+            if (isMounted.current) {
+                // any actions required after the task is completed
+                // like fetching and rendering the full task data or
+                // redirecting the user to another location
+            }
+        });
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, [id]);
+
+    return (
+        <div className="task">
+            Task #{id}: {status}
+        </div>
+    );
+};
+```
+
+## `schedule()` vs `waitFor()`
+
+`waitFor()` only checks whether a certain condition is met without returning the latest result of the poll function, which is sometimes unnecessary. To make use of the latest data from the poll function `schedule()` should be used instead.
