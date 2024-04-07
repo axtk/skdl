@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/skdl?labelColor=royalblue&color=royalblue&style=flat-square)](https://www.npmjs.com/package/skdl) [![github](https://img.shields.io/badge/-github-royalblue?labelColor=royalblue&color=royalblue&style=flat-square&logo=github)](https://github.com/axtk/skdl) ![typescript](https://img.shields.io/badge/%23-typescript-345?labelColor=345&color=345&style=flat-square)
+
 # skdl
 
 *Promisifying pollings*
