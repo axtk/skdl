@@ -12,11 +12,13 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
   - [Non-constant conditional polling (including exponential backoff)](#non-constant-conditional-polling-including-exponential-backoff)
   - [Interruption with an exception](#interruption-with-an-exception)
   - [Single delayed call](#single-delayed-call)
+  - [Timeout](#timeout)
+  - [Timeout error handling](#timeout-error-handling)
   - [With React](#with-react)
 - [`waitFor()`](#waitfor)
   - [Waiting for a DOM element](#waiting-for-a-dom-element)
-  - [Timeout](#timeout)
-  - [Timeout error handling](#timeout-error-handling)
+  - [Timeout](#timeout-1)
+  - [Timeout error handling](#timeout-error-handling-1)
   - [With React](#with-react-1)
 - [`schedule()` vs `waitFor()`](#schedule-vs-waitfor)
 
@@ -141,6 +143,52 @@ let data = await getData(params);
 ```
 
 As an edge case, a polling can be reduced to a single delayed call. Here, `getData(params)` is resolved to `data` after 1 iteration delayed by 1 second.
+
+### Timeout
+
+The scheduled function returned from `schedule()` can be interrupted with a timeout, if it's set with the `timeout` option:
+
+```js
+import { schedule } from 'skdl';
+
+let getData = schedule(poll, {
+    delay: 3000,
+    repeat: (data, iteration) => {
+        return data.status !== 'completed';
+    },
+    timeout: 30000
+});
+
+let data = await getData(params);
+// if the polling isn't complete in 30 seconds (as configured in the
+// `timeout` option), it will be interrupted with an error (see
+// 'Timeout error handling' below)
+```
+
+### Timeout error handling
+
+The timeout error can be intercepted with the following check in the `catch` block:
+
+```js
+import { schedule, isScheduleTimeoutError } from 'skdl';
+
+let getData = schedule(poll, {
+    delay: 3000,
+    repeat: (data, iteration) => {
+        return data.status !== 'completed';
+    },
+    timeout: 30000
+});
+
+try {
+    let data = await getData(params);
+}
+catch (error) {
+    if (isScheduleTimeoutError(error)) {
+        // timeout error handling
+    }
+}
+```
 
 ### With React
 
