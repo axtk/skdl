@@ -1,4 +1,4 @@
-export type ScheduleOptions<T> = {
+export type ScheduleOptions<T = unknown> = {
     /**
      * A delay between iterations in milliseconds.
      * An exponential polling or any other variety of a non-constant polling
