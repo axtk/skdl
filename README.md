@@ -15,6 +15,8 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
   - [With React](#with-react)
 - [`waitFor()`](#waitfor)
   - [Waiting for a DOM element](#waiting-for-a-dom-element)
+  - [Timeout](#timeout)
+  - [Timeout error handling](#timeout-error-handling)
   - [With React](#with-react-1)
 - [`schedule()` vs `waitFor()`](#schedule-vs-waitfor)
 
@@ -214,7 +216,7 @@ async function isComplete() {
 await waitFor(isComplete, 1000);
 ```
 
-Like `schedule()`, `waitFor()` accepts either a constant or non-constant delay as the second argument, which can be defined as `number | ((iteration: number) => number)`:
+Like `schedule()`, `waitFor()` accepts either a constant or non-constant delay as the second parameter, which can be defined as `number | ((iteration: number) => number)`:
 
 ```js
 // for the first 5 iterations the delay is 1 second,
@@ -230,6 +232,43 @@ await waitFor(isComplete, iteration => iteration < 5 ? 1000 : 5000);
 import { waitFor } from 'skdl';
 
 await waitFor(() => document.querySelector('.target') !== null, 100);
+```
+
+### Timeout
+
+Waiting with `waitFor()` can be interrupted with a timeout, if it's set with the third parameter:
+
+```js
+import { waitFor } from 'skdl';
+
+function hasTarget() {
+    return document.querySelector('.target') !== null;
+}
+
+await waitFor(hasTarget, 100, 5000);
+// if the element doesn't appear within 5 seconds `waitFor()` will
+// quit waiting with an error (see 'Timeout error handling' below)
+```
+
+### Timeout error handling
+
+The timeout error can be intercepted with the following check in the `catch` block:
+
+```js
+import { waitFor, isScheduleTimeoutError } from 'skdl';
+
+function hasTarget() {
+    return document.querySelector('.target') !== null;
+}
+
+try {
+    await waitFor(hasTarget, 100, 5000);
+}
+catch (error) {
+    if (isScheduleTimeoutError(error)) {
+        // timeout error handling
+    }
+}
 ```
 
 ### With React
