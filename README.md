@@ -13,6 +13,8 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
   - [Interruption with an exception](#interruption-with-an-exception)
   - [Single delayed call](#single-delayed-call)
   - [With React](#with-react)
+  - [`waitFor`](#waitfor)
+    - [Waiting for a DOM element](#waiting-for-a-dom-element)
 
 ## Installation
 
@@ -191,4 +193,39 @@ const Task = ({ id }) => {
         </div>
     );
 };
+```
+
+### `waitFor`
+
+When the returned value of the polling function is a `boolean` value (or can be expressed as such), waiting for a condition to be met can be further simplified with the `waitFor()` utility function:
+
+```js
+import { waitFor } from 'skdl';
+
+async function isComplete() {
+    let response = await fetch('/status');
+    let data = await response.json();
+
+    return data.status === 'complete';
+}
+
+await waitFor(isComplete, 1000);
+```
+
+Like `schedule()`, `waitFor()` accepts either a constant or non-constant delay as the second argument, which can be defined as `number | ((iteration: number) => number)`:
+
+```js
+// for the first 5 iterations the delay is 1 second,
+// and 5 seconds further on
+await waitFor(isComplete, iteration => iteration < 5 ? 1000 : 5000);
+```
+
+#### Waiting for a DOM element
+
+`waitFor()` can also be used to wait for a DOM element to appear in the DOM tree:
+
+```js
+import { waitFor } from 'skdl';
+
+await waitFor(() => document.querySelector('.target') !== null, 100);
 ```
