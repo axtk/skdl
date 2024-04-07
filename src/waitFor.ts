@@ -27,5 +27,7 @@ export function waitFor(
                 reject(error);
             }
         };
+
+        run();
     });
 }

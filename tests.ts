@@ -1,4 +1,5 @@
 import { schedule } from './src/schedule';
+import { waitFor } from './src/waitFor';
 
 let f = () => console.log('.');
 
@@ -91,5 +92,35 @@ await test('schedule, repeat while status !== completed, constant delay', async 
 
     await run();
 }, 800);
+
+await test('waitFor, short constant delay', async () => {
+    let x = false;
+
+    setTimeout(() => {
+        x = true;
+    }, 300);
+
+    await waitFor(() => x, 30);
+}, 300);
+
+await test('waitFor, long constant delay', async () => {
+    let x = false;
+
+    setTimeout(() => {
+        x = true;
+    }, 300);
+
+    await waitFor(() => x, 500);
+}, 500);
+
+await test('waitFor, linear delay', async () => {
+    let x = false;
+
+    setTimeout(() => {
+        x = true;
+    }, 450);
+
+    await waitFor(() => x, iteration => (iteration + 1)*100);
+}, 600);
 
 })();
