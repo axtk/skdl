@@ -11,11 +11,15 @@ export function schedule<Result, Params extends unknown[]>(
             let scheduleTimeout: Timeout = null;
 
             let cleanup = () => {
-                if (callbackTimeout !== null)
+                if (callbackTimeout !== null) {
                     clearTimeout(callbackTimeout);
+                    callbackTimeout = null;
+                }
 
-                if (scheduleTimeout !== null)
+                if (scheduleTimeout !== null) {
                     clearTimeout(scheduleTimeout);
+                    scheduleTimeout = null;
+                }
             };
 
             if (timeout !== undefined)
