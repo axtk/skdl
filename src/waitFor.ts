@@ -1,4 +1,4 @@
-import { schedule } from './schedule';
+import {schedule} from './schedule';
 
 const noop = () => {};
 

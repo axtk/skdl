@@ -37,7 +37,8 @@ Let's take the following polling function as an example to illustrate the common
 ```js
 async function poll(params) {
     let response = await fetch(`/task?${new URLSearchParams(params)}`);
-    return await response.json();
+
+    return response.json();
 }
 ```
 
@@ -46,11 +47,11 @@ In the examples below, this function is passed to the `schedule` utility as a pa
 ### Constant finite polling
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: 3000,
-    repeat: 10
+    repeat: 10,
 });
 
 let data = await getData(params);
@@ -61,11 +62,11 @@ Here, `getData(params)` is resolved after 10 iterations have passed, with each i
 ### Constant infinite polling
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: 3000,
-    repeat: true
+    repeat: true,
 });
 
 getData(params);
@@ -76,7 +77,7 @@ Here, `getData(params)` calls `poll(params)` every 3 seconds after the previous 
 ### Constant conditional polling
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: 3000,
@@ -84,7 +85,7 @@ let getData = schedule(poll, {
     // return value of the scheduled callback
     repeat: (data, iteration) => {
         return data.status !== 'completed' && iteration < 10;
-    }
+    },
 });
 
 let data = await getData(params);
@@ -95,7 +96,7 @@ Here, `getData(params)` is resolved when `poll(params)` returns `{ status: 'comp
 ### Non-constant conditional polling (including exponential backoff)
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: (data, iteration) => {
@@ -103,7 +104,7 @@ let getData = schedule(poll, {
     },
     repeat: (data, iteration) => {
         return data.status !== 'completed' && iteration < 10;
-    }
+    },
 });
 
 let data = await getData(params);
@@ -114,7 +115,7 @@ Here, `getData(params)` is resolved when `poll(params)` returns `{ status: 'comp
 ### Interruption with an exception
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: (data, iteration) => {
@@ -123,8 +124,9 @@ let getData = schedule(poll, {
     repeat: (data, iteration) => {
         if (iteration > 10)
             throw new Error('too many iterations');
+
         return data.status !== 'completed';
-    }
+    },
 });
 
 let data = await getData(params);
@@ -135,10 +137,10 @@ Here, the `Promise` returned from `getData(params)` will be rejected with an ins
 ### Single delayed call
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
-    delay: 1000
+    delay: 1000,
 });
 
 let data = await getData(params);
@@ -151,14 +153,14 @@ As an edge case, a polling can be reduced to a single delayed call. Here, `getDa
 The scheduled function returned from `schedule()` can be interrupted with a timeout, if it's set with the `timeout` option:
 
 ```js
-import { schedule } from 'skdl';
+import {schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: 3000,
     repeat: (data, iteration) => {
         return data.status !== 'completed';
     },
-    timeout: 30000
+    timeout: 30000,
 });
 
 let data = await getData(params);
@@ -172,14 +174,14 @@ let data = await getData(params);
 The timeout error can be intercepted with the following check in the `catch` block:
 
 ```js
-import { schedule, isScheduleTimeoutError } from 'skdl';
+import {isScheduleTimeoutError, schedule} from 'skdl';
 
 let getData = schedule(poll, {
     delay: 3000,
     repeat: (data, iteration) => {
         return data.status !== 'completed';
     },
-    timeout: 30000
+    timeout: 30000,
 });
 
 try {
@@ -196,18 +198,18 @@ catch (error) {
 
 With React, it is generally necessary to clean up pollings started by a component when the component gets unmounted. It can be arranged with the `repeat` option, just as any other condition controlling whether a polling should proceed:
 
-```js
-import { useEffect, useRef, useState } from 'react';
-import { schedule } from 'skdl';
+```jsx
+import {useEffect, useRef, useState} from 'react';
+import {schedule} from 'skdl';
 
-const Task = ({ id }) => {
-    const isMounted = useRef(false);
-    const [status, setStatus] = useState();
+const Task = ({id}) => {
+    let isMounted = useRef(false);
+    let [status, setStatus] = useState();
 
     useEffect(() => {
         isMounted.current = true;
 
-        const pollStatus = () => {
+        let pollStatus = () => {
             return fetch(`/tasks/status?id=${id}`)
                 .then(response => response.json());
         };
@@ -215,9 +217,9 @@ const Task = ({ id }) => {
         // the `schedule` utility creates a function returning a Promise
         // that is resolved when the `repeat` option returns `false`
         // effectively turning a polling into a Promise
-        const waitForCompletion = schedule(pollStatus, {
+        let waitForCompletion = schedule(pollStatus, {
             delay: 5000,
-            repeat: (data) => {
+            repeat: data => {
                 if (isMounted.current)
                     setStatus(data.status);
 
@@ -254,7 +256,7 @@ const Task = ({ id }) => {
 When the returned value of the polling function is a `boolean` value (or can be expressed as such), waiting for a condition to be met can be further simplified with the `waitFor()` utility function:
 
 ```js
-import { waitFor } from 'skdl';
+import {waitFor} from 'skdl';
 
 async function isComplete() {
     let response = await fetch('/status');
@@ -279,7 +281,7 @@ await waitFor(isComplete, iteration => iteration < 5 ? 1000 : 5000);
 `waitFor()` can also be used to wait for a DOM element to appear in the DOM tree:
 
 ```js
-import { waitFor } from 'skdl';
+import {waitFor} from 'skdl';
 
 await waitFor(() => document.querySelector('.target') !== null, 100);
 ```
@@ -289,7 +291,7 @@ await waitFor(() => document.querySelector('.target') !== null, 100);
 Waiting with `waitFor()` can be interrupted with a timeout, if it's set with the third parameter:
 
 ```js
-import { waitFor } from 'skdl';
+import {waitFor} from 'skdl';
 
 function hasTarget() {
     return document.querySelector('.target') !== null;
@@ -305,7 +307,7 @@ await waitFor(hasTarget, 100, 5000);
 The timeout error can be intercepted with the following check in the `catch` block:
 
 ```js
-import { waitFor, isScheduleTimeoutError } from 'skdl';
+import {isScheduleTimeoutError, waitFor} from 'skdl';
 
 function hasTarget() {
     return document.querySelector('.target') !== null;
@@ -325,21 +327,21 @@ catch (error) {
 
 Like with `schedule()`, `waitFor()` can be stopped when a React component hosting the `waitFor()` call gets unmounted:
 
-```js
-import { useEffect, useRef, useState } from 'react';
-import { waitFor } from 'skdl';
+```jsx
+import {useEffect, useRef, useState} from 'react';
+import {waitFor} from 'skdl';
 
-const Task = ({ id }) => {
-    const isMounted = useRef(false);
-    const [status, setStatus] = useState();
+const Task = ({id}) => {
+    let isMounted = useRef(false);
+    let [status, setStatus] = useState();
 
     useEffect(() => {
         isMounted.current = true;
 
-        const isComplete = () => {
+        let isComplete = () => {
             return fetch(`/tasks/status?id=${id}`)
                 .then(response => response.json())
-                .then(({ status }) => {
+                .then(({status}) => {
                     if (isMounted.current)
                         setStatus(status);
 

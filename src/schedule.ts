@@ -1,9 +1,9 @@
-import { SCHEDULE_TIMEOUT } from './const';
-import type { ScheduleOptions, Timeout } from './types';
+import {SCHEDULE_TIMEOUT} from './const';
+import type {ScheduleOptions, Timeout} from './types';
 
 export function schedule<Result, Params extends unknown[]>(
     callback: (...args: Params) => Promise<Result> | Result,
-    { delay, repeat, timeout }: ScheduleOptions<Result> = {},
+    {delay, repeat, timeout}: ScheduleOptions<Result> = {},
 ): (...args: Params) => Promise<Result | undefined> {
     return (...args) => {
         return new Promise((resolve, reject) => {
@@ -37,12 +37,13 @@ export function schedule<Result, Params extends unknown[]>(
                         let next = (shouldRepeat: boolean) => {
                             if (!shouldRepeat) {
                                 cleanup();
+
                                 return resolve(latestValue);
                             }
 
-                            let resolvedDelay = typeof delay === 'function' ?
-                                delay(latestValue, iteration) :
-                                delay;
+                            let resolvedDelay = typeof delay === 'function'
+                                ? delay(latestValue, iteration)
+                                : delay;
 
                             callbackTimeout = setTimeout(() => {
                                 Promise.resolve(callback(...args))
@@ -71,10 +72,21 @@ export function schedule<Result, Params extends unknown[]>(
 
                 run();
             }
-            else if (delay !== undefined) {
-                let resolvedDelay = typeof delay === 'function' ?
-                    delay(undefined, 0) :
-                    delay;
+            else if (delay === undefined) {
+                Promise.resolve(callback(...args))
+                    .then(value => {
+                        cleanup();
+                        resolve(value);
+                    })
+                    .catch(error => {
+                        cleanup();
+                        reject(error);
+                    });
+            }
+            else {
+                let resolvedDelay = typeof delay === 'function'
+                    ? delay(undefined, 0)
+                    : delay;
 
                 callbackTimeout = setTimeout(() => {
                     Promise.resolve(callback(...args))
@@ -87,17 +99,6 @@ export function schedule<Result, Params extends unknown[]>(
                             reject(error);
                         });
                 }, resolvedDelay);
-            }
-            else {
-                Promise.resolve(callback(...args))
-                    .then(value => {
-                        cleanup();
-                        resolve(value);
-                    })
-                    .catch(error => {
-                        cleanup();
-                        reject(error);
-                    });
             }
         });
     };
