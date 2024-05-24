@@ -1,7 +1,7 @@
 {
   "name": "skdl",
   "version": "1.1.6",
-  "description": "Polling promisifier",
+  "description": "Helps set up a promisified polling",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -19,8 +19,8 @@
     "url": "git+https://github.com/axtk/skdl.git"
   },
   "keywords": [
-    "promisified polling",
     "polling",
+    "promisified polling",
     "promise",
     "promisify",
     "async"
