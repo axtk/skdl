@@ -1,6 +1,6 @@
 {
   "name": "skdl",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Helps set up a promisified polling",
   "main": "dist/index.js",
   "type": "module",
