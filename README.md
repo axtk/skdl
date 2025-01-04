@@ -1,12 +1,13 @@
-[![npm](https://img.shields.io/npm/v/skdl?labelColor=royalblue&color=royalblue&style=flat-square)](https://www.npmjs.com/package/skdl) [![github](https://img.shields.io/badge/-github-royalblue?labelColor=royalblue&color=royalblue&style=flat-square&logo=github)](https://github.com/axtk/skdl) ![typescript](https://img.shields.io/badge/%23-typescript-345?labelColor=345&color=345&style=flat-square)
-
 # skdl
 
 *Helps set up a promisified polling*
 
 Interaction with a polling (i.e. a scheduled repeated action) looks similar to interaction with an asynchronous function: calling and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating an async function for a repeated action that is resolved when a defined condition is met.
 
-- [Installation](#installation)
+Installation: `npm i skdl`
+
+## Contents
+
 - [`schedule()`](#schedule)
   - [Constant finite polling](#constant-finite-polling)
   - [Constant infinite polling](#constant-infinite-polling)
@@ -23,12 +24,6 @@ Interaction with a polling (i.e. a scheduled repeated action) looks similar to i
   - [Timeout error handling](#timeout-error-handling-1)
   - [With React](#with-react-1)
 - [`schedule()` vs `waitFor()`](#schedule-vs-waitfor)
-
-## Installation
-
-```
-npm i skdl
-```
 
 ## `schedule()`
 
