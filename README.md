@@ -1,6 +1,6 @@
 # skdl
 
-*Helps set up a promisified polling*
+*Polling as a Promise*
 
 Interaction with a polling (i.e. a scheduled repeated action) looks similar to interaction with an asynchronous function: calling and waiting for its resolution before proceeding to other tasks. This package helps reduce the effort (and amount of code) required to set up a polling by creating an async function for a repeated action that is resolved when a defined condition is met.
 
