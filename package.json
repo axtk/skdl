@@ -1,6 +1,6 @@
 {
   "name": "skdl",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Polling as a Promise",
   "main": "dist/index.js",
   "type": "module",
