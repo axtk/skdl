@@ -1,3 +1,5 @@
+[![npm](https://flat.badgen.net/npm/v/skdl?labelColor=345&color=46e)](https://www.npmjs.com/package/skdl) ![Lightweight](https://flat.badgen.net/bundlephobia/minzip/skdl/?labelColor=345&color=46e) ![TypeScript ✓](https://flat.badgen.net/badge/TypeScript/✓?labelColor=345&color=345)
+
 # skdl
 
 *Polling as a Promise*
